@@ -1,0 +1,9 @@
+Package: ellipsoid
+Type: Package
+Title: Fit ellipsoids to point data
+Version: 1.0
+Date: 2015-06-29
+Author: Tuomas Rajala
+Maintainer: Tuomas Rajala <tuomas.rajala@iki.fi>
+Description: Given a n x d point locations, fit an ellipsoid using consistent least squares.
+License: GPL

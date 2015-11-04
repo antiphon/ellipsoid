@@ -8,7 +8,6 @@
 #' @param probs The quantiles for the CI. Default is c(0.025, 0.975)
 #' @param tol tolerance for absolute  deviation in the ||beta||=1 constraint.
 #' 
-#' @export
 #' @exportMethod confint
 #' @import mvtnorm
 #' @export

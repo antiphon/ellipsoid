@@ -42,18 +42,25 @@ mean_ellipsoids <- function(x, nsim=1000, weight, just_rotation=FALSE, add_noise
   if(!all(sapply(x, class)=="ellipsoid")) stop("x needs to be a list of ellipsoids.")
   
   d <- x[[1]]$dim
-  # determine suitable ellipsoids
+  #
+  # determine suitable ellipsoids. Some might be unestimated.
+  #
   ok <- which(sapply(x, getElement, "valid"))
   x_ok <- x[ok]
-  # determine sample size distribution using standard deviation
+  #
+  #
+  # determine sample size distribution using standard deviations
+  #
   if(missing(weight)){
     s2 <- sapply(x_ok, function(e) e$ols_fit$s2)
-    nv <- sapply(x_ok, function(e) e$ndata  )
+    nv <- sapply(x_ok, function(e) e$ndata)
     if(!all(s2>0)){ 
       warning("Can't extract s2 estimates, reverting to equal weighting.")
       weight <- rep(1, length(ok))
     }
-    else weight <- sqrt(nv/s2)
+    else {
+      weight <- sqrt(nv/s2)
+    }
   }
   else{
     weight <- rep(1, length(ok))

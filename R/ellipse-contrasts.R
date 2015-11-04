@@ -2,12 +2,15 @@
 #' 
 #' Give this to confint.ellipsoid to compute the contrast for
 #'  testing semi_a - semi_b = 0
+#' @param out do outlier removal, the quadratic simulations is unstable.
+#' @param range range of outlier removal. See boxplot for details of the formula.
+#' 
 #' 
 #' @export
 
 # contrast for the axes being the same
 
-ellipse_contrast_2d <- function(els, out=TRUE){
+ellipse_contrast_2d <- function(els, out=TRUE, range=1.85){
   if(ncol(els[[1]]$A)==2){
     R <- lapply(lapply(els, getElement, "A"), ellipse_solve_rota)
     axes <- t(sapply(R, function(b) b$axes ))
@@ -21,7 +24,7 @@ ellipse_contrast_2d <- function(els, out=TRUE){
     # check outliers
     if(out){
       m <- median(e, na.rm=TRUE)
-      out <- abs(e-m) > 1.85 * abs(quantile(e-m, prob=3/4))
+      out <- abs(e-m) > range * abs(quantile(e-m, prob=3/4))
       e<-e[!out]
     }
     e

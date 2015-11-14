@@ -1,7 +1,6 @@
 #############################################################
 #' Summarise an ellipsoid
 #' 
-#' @exportMethod summary
 #' @export
 summary.ellipsoid <- function(x, ...){
   print(x)

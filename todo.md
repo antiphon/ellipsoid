@@ -2,8 +2,8 @@
 
 * rellipsoid 2d @done
 * rellipsoid 3d @done partly
-* OLS
-* ALS
+* OLS @done
+* ALS @done
 
 ## Helpers
 

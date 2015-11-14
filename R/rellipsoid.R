@@ -2,7 +2,7 @@
 #'
 #'@param axes vector giving the semi-axis lengths
 #'@param R rotation matrix
-#'@param noise.sd
+#'@param noise.sd noise sd, 0=no noise
 #'@param pieces Number of pieces to divide the surface into. See details.
 #'  
 #'@details 
@@ -11,6 +11,7 @@
 #'sphere and then transforming with the ellipsoid axes. The sampling weights are
 #'set to piecewise linear approximation of the ellipse surface integral, the resolution of which is controlled by 'pieces'.
 #'@import sphere
+#'@export 
 
 rellipsoid <- function(n, axes=c(1,1,1), noise.sd=0, R=NULL, pieces=1000){
   d <- length(axes)
@@ -68,7 +69,7 @@ rellipsoid <- function(n, axes=c(1,1,1), noise.sd=0, R=NULL, pieces=1000){
 #' 
 #' @param axes vector giving the semi-axis lengths
 #' @param R rotation matrix
-#' @param noise.sd 
+#' @param noise.sd noise
 #' 
 #' @import sphere
 

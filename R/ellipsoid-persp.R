@@ -7,7 +7,7 @@
 #' @param theta Camera rotation, see persp.default
 #' @param phi Camera rotation, see persp.default
 #' @param expand 
-#' @exportMethod persp
+#'
 #' @export
 persp.ellipsoid <- function(x, add=FALSE, theta=25, phi=30, 
                             expand=.9, triptych=FALSE, 
@@ -38,6 +38,7 @@ persp.ellipsoid <- function(x, add=FALSE, theta=25, phi=30,
 }
 
 #' add ellipse to persp plot
+#' 
 #' @import sphere
 
 add_ellipsoid2persp <- function(x, N=2, colmap=sphere::values2colors, pmat, ...){

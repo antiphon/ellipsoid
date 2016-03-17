@@ -17,4 +17,4 @@ summary(e)
 #plot(e)
 
 par(mfrow=c(3,1))
-persp(e, triptych = T)
+#persp(e, triptych = T)

@@ -5,6 +5,9 @@ Version: 1.1
 Date: 2015-11-12
 Author: Tuomas Rajala
 Maintainer: Tuomas Rajala <tuomas.rajala@iki.fi>
-Description: Given a n x d point locations, fit an ellipsoid. Plotting and some other operations also provided.
+Description: Given a n x d point locations, fit an ellipsoid. Plotting and some
+    other operations also provided.
 License: GPL
-Imports: parallel
+Imports:
+    parallel
+RoxygenNote: 5.0.1

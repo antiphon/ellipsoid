@@ -1,18 +1,66 @@
 ############################################################
 #' Plot an ellipsoid
 #' 
+#' @param x ellipsoid
+#' @param add logical
+#' @param i Normal 1,2 or 3. Plot intersection of 3d ellipsoid.
+#' @param levels If i>0, draw this many levels from origin to tip of the axis
+#' @param res 2d resolution
+#' @param scale 1. use to enlarge or shrink
+#' @param N 2, iteration of refinement in 3D (resolution)
+#' 
+#' @details 
+#' For 3D ellipsoid, if i=1,2 or 3, plot 2D intersection of 
+#' plane:  i = 1 yz-plane; i = 2 xz-plane; i = 3 xy-plane. 
+#' 
 #' @export
-plot.ellipsoid <- function(x, add=TRUE, res=201, scale=1, ...){
+plot.ellipsoid <- function(x, add=TRUE, i=0, levels=1, 
+                           res=128, scale=1, N=2, 
+                           xlab="x",
+                           ylab="y", ...){
   if(x$dim==2){
     a <- c(seq(0, 2*pi, length=res))
     y <- cbind(cos(a),sin(a))
     z <- y * predict(x, y) * scale
-    if(!add) plot(NA, xlim=range(z), ylim=range(z), asp=1, xlab="", ylab="")
+    z <- t(t(z) + x$center)
+    if(!add) plot(NA, xlim=range(z), ylim=range(z),
+                  asp=1, xlab=xlab, ylab=ylab)
     lines(z, ...)
   }
   else{
-      y <- ellipsoid_shape(axes=x$semi_axes, R=x$rot)
+    if(i!=0){
+      if(xlab!="") xlab <- c("y", "x", "x")[i]
+      if(ylab!="") ylab <- c("z", "z", "y")[i]
+      # max
+      n <- c(0,0,0); n[i] <- 1
+      rr <- c(0,0,0); rr[(i+1)%%3+1] <- 1
+      maxq <- predict(x, rbind(n))
+      qseq <- seq(0, maxq, l=levels)
+      # max reach
+      for(j in 1:levels){
+        q <-  x$center
+        q[i] <- q[i] + qseq[j]
+        p <- intersect_ellipsoid_plane(x, n, q)
+        basis <- p$basis
+        r <- basis[-i,1]
+        s <- basis[-i,2]
+        cent <- p$center3d[-i]
+        # rotation
+        ang <- atan2(r[2],r[1])
+        R <- sphere::rotationMatrix(az=ang)[-3,-3]
+        # here we have the ellipse
+        el2 <- as_ellipsoid(p$semi_axes, R, center=cent)
+        ### plot it
+        plot.ellipsoid(el2, add=add | j>1, 
+                       res=res, scale=scale, 
+                       xlab = xlab, ylab = ylab,
+                       ...)
+      }
+    }
+    else{
+      y <- ellipsoid_shape(N=N, axes=x$semi_axes, R=x$rot, center=x$center)
       rgl::shade3d(y, ...)
+    }
   }
 }
 ####################################################################
@@ -41,15 +89,18 @@ predict.ellipsoid <- function(x, u, ...){
 #' @import rgl
 #' @export
 
-ellipsoid_shape <- function(N=2, axes=c(1,1,1), R=NULL){
+ellipsoid_shape <- function(N=2, axes=c(1,1,1), R=NULL, center=c(0,0,0)){
   ico <- rgl::icosahedron3d()
   for(i in 1:N) ico <- rgl::subdivision3d(ico)
+  xy <- t(ico$vb[-4,])
+  # units
+  xy <- xy/sqrt(rowSums(xy^2))
   D <- diag(axes)
-  xy <- t(D%*%ico$vb[1:3,])
+  
+  xy <- xy %*% D
   exy <- if(is.null(R)) xy else t(R%*%t(xy))
-  ico$vb[1:3,] <- t(exy)
-  ico$vb <- t( t(ico$vb)/apply(ico$vb, 2, function(v) sqrt(sum(v^2))))
-  ico
+  ico$vb <-t(  asHomogeneous(exy)  )
+  translate3d(ico, center[1], center[2], center[3])
 }
 
 
@@ -61,7 +112,8 @@ print.ellipsoid <- function(x, ...){
   type <- ifelse(x$dim==2, "2D ellipse", "3D ellipsoid")
   if(!is.null(x$ave))
     cat(paste0("Average ", type, ", computed from ", x$nellipses, " ", type, "s.\n"))
-  else cat(type, "fitted to", x$n, "points.\n")
+  else if(!is.null(x$n)) cat(type, "fitted to", x$n, "points.\n")
+  else cat(type, "\n")
 }
 
 ####################################################################
@@ -178,7 +230,7 @@ sample_ellipse_beta <- function(x, nsim=100, tol=0, maxiter=500){
 
 ellipsoid_from_beta <- function(beta, d, ...){
   elform <- ellipse_form(beta, d)
-  chat <- elform$c
+  chat <- c( elform$c )
   Ahat <- elform$A
   # solve rotation and axes:
   rota <- ellipse_solve_rota(Ahat, ...)
@@ -207,3 +259,41 @@ ellipsoid_from_beta <- function(beta, d, ...){
   res
 }
 
+#' Create an ellipsoid object
+#' 
+#' @param R rotation matrix
+#' @param semi_axes semi_axes lengths
+#' @param center center coordinates
+#' 
+#' @export
+as_ellipsoid <- function(semi_axes=c(1,1,1), 
+                         R=diag(0,3), 
+                         center=c(0,0,0)) {
+  # solve rotation and axes:
+  if(ncol(R)!=length(semi_axes))stop("dimension mismatch")
+  M <- R%*%diag(semi_axes)
+  angles <- NULL
+  d <- ncol(R)
+  if(d==2) {
+    f <- R %*% c(1,0)
+    angles <- atan2(f[2],f[1])
+  }else if(d==3){
+    angles <- sphere::rotationMatrix2EulerAngles(R)
+  }
+  
+  # check if we got a valid fit
+  valid <- all(!is.infinite(c(semi_axes, angles)) & !is.na(c(semi_axes, angles)))
+  # compile
+  # make the symmetric A matrix by
+  # reversing eigenvalue decomposition
+  A <- R%*%diag(1/semi_axes^2)%*%t(R)
+  #
+  res <- list(center=c(center), Ahat=A, 
+              semi_axes=semi_axes, 
+              rot=R, 
+              M=M, 
+              rot_angle=angles, 
+              valid=valid, dim=d)
+  class(res) <- "ellipsoid"
+  res
+}

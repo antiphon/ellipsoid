@@ -88,3 +88,4 @@ ellipsoid_ALS <- function(x, s2, ..., just_U=FALSE) {
   # done
   als
 }
+

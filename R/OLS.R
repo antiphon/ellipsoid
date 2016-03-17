@@ -68,6 +68,6 @@ ellipsoid_OLS  <- function(x, origin=FALSE) {
   res$ols_fit <- list(varcov=S, beta_est=beta, s2=s2)
   res$origin <- origin
   #
-  #' done
+  # done
   res
 }

@@ -2,6 +2,7 @@
 #'
 #'@param axes vector giving the semi-axis lengths
 #'@param R rotation matrix
+#'@param center center vector, c(x,y) or c(x,y,z)
 #'@param noise.sd noise sd, 0=no noise
 #'@param pieces Number of pieces to divide the surface into. See details.
 #'  
@@ -13,9 +14,11 @@
 #'@import sphere
 #'@export 
 
-rellipsoid <- function(n, axes=c(1,1,1), noise.sd=0, R=NULL, pieces=1000){
-  d <- length(axes)
+rellipsoid <- function(n, axes=c(1,1,1), center, noise.sd=0, R=NULL, pieces=1000){
+  d <- length(axes) 
   if(d > 3 | d < 1) stop("Only 2D or 3D ellipsoids are supported.") 
+  if(missing(center)) center <- rep(0, d)
+  if(length(center) != d) stop(paste0("'center' should be a vector of length ", d))
   M <- diag(axes)
   # 2D
   if(d==2){
@@ -54,6 +57,8 @@ rellipsoid <- function(n, axes=c(1,1,1), noise.sd=0, R=NULL, pieces=1000){
   #
   # Add noise if needed 
   if(noise.sd) y <- y + rnorm(nrow(y)*d, 0, noise.sd)
+  # shift
+  y <- t( t(y) + center)
   y
 }
 

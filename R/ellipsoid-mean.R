@@ -25,11 +25,11 @@ mean_rotation_quat <- function(x, ...){
 #############################################################
 #' Mean ellipsoid using empirical mean 
 #' 
-#' The sample size is proportional to estimated s2
+#' The sample size is proportional to estimates of s2 (if available)
 #' 
 #' @param x a list of ellipsoids
 #' @param nsim Total number of points to simulate from ellipsoids for average estimation
-#' @param weight Weigth the ellipsoid samples. Default is to use standard deviation of the OLS estimates.
+#' @param weight Weigth the ellipsoid samples. Default is to use standard deviation of the OLS estimates (if available).
 #' @param just_rotation Rescale each ellipse to have same determinant?
 #' @param add_noise Simulate noise using the s2 ols estimate?
 #' 
@@ -86,14 +86,18 @@ mean_ellipsoids <- function(x, nsim=1000, weight, just_rotation=FALSE, add_noise
   dats <- if(any(!generate)) do.call(rbind, lapply(x_ok[which(!generate)], getElement, "data")) else NULL
   if(add_noise)
       for(i in which(generate)) 
-        dats<-rbind(dats, with(x_ok[[i]], rellipsoid(n=nsimulations[i], axes=semi_axes, R=rot, noise = sqrt(ols_fit$s2))))
+        dats<-rbind(dats, with(x_ok[[i]], 
+                               rellipsoid(n=nsimulations[i], axes=semi_axes, 
+                                          center = center, R=rot, noise = sqrt(ols_fit$s2))))
     else 
       for(i in which(generate))
-        dats<-rbind(dats, with(x_ok[[i]], rellipsoid(n=nsimulations[i], axes=semi_axes, R=rot)))
+        dats<-rbind(dats, with(x_ok[[i]], 
+                               rellipsoid(n=nsimulations[i], axes=semi_axes, 
+                                          center = center, R=rot)))
   # fit
   ave <- ellipsoid_OLS(dats, ...)
   ave$ndata <- nrow(dats)
-  ave$ave <- 1
+  ave$ave <- TRUE
   ave$nellipses <- length(ok)
   if(keep_data) ave$data <- dats
   ave$nsims <- nsimulations
@@ -134,11 +138,12 @@ mean_ellipse <- function(x, weight, ...){
   ang[i] <- ang[i] - pi
   ### semi-axes
   semis <- t( sapply(x_ok, getElement, "semi_axes") )
-  
+  centers <- t(sapply(x_ok, getElement, "center"))
   # 
   ave <- list(valid=FALSE, dim=d)
   R<-function(a)cbind(c(cos(a),sin(a)),c(-sin(a),cos(a)))
   # Averages:
+  ave$center <- colSums(centers * weight) 
   ave$rot_angle <- sum(ang*weight)
   ave$rot <- R(ave$rot_angle)
   ave$semi_axes <- colSums(semis*weight)

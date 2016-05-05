@@ -37,16 +37,21 @@ ellipsoid_OLS  <- function(x, origin=FALSE) {
   res <- ellipsoid_from_beta(beta, d)
   res$ndata <- n
   ####### add the error variance
-  # the error variance
-  r_data <- sqrt(rowSums(x^2))
-  u_data <- x/r_data
+  # the error variance. Need to center the coords, note how this is not taken into account.
+  
+  # center
+  xc <- t( t(x) - res$center)
+  
+  r_data <- sqrt(rowSums(xc^2))
+  u_data <- xc/r_data
   r_pred <- predict(res, u_data)
   resi <- r_data - r_pred
+  n <- sum(!is.na(resi))
   if(d==2){
-    s2 <- sum(resi^2)/(n-1) # this is approximation with 0 curvature TODO better
+    s2 <- sum(resi^2, na.rm=TRUE)/(n-1) # this is approximation with 0 curvature TODO better
   }
   else{
-    s2 <- sum(resi^2)/(n-1) # this is approximation to 0 curvature TODO BETTER
+    s2 <- sum(resi^2, na.rm=TRUE)/(n-1) # this is approximation to 0 curvature TODO BETTER
   }
   # the variance covariance
   S0 <- solve_S0(Y)
@@ -61,8 +66,11 @@ ellipsoid_OLS  <- function(x, origin=FALSE) {
     S <- S0
   }
   # make sure symmetric varcov
+  m <- max(S-t(S))>0.01
   
-  if(max(S-t(S))>0.01) warning("varcov not good, big asymmetry.")
+  if(is.na(m)) browser()
+  if(m) 
+    warning("varcov of quadratic equation terms asymmetric, forcing symmetric.")
   S <- 0.5 * (S + t(S))
   #
   res$ols_fit <- list(varcov=S, beta_est=beta, s2=s2)

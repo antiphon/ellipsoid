@@ -6,8 +6,11 @@
 #' @param add Add to a scene? 
 #' @param theta Camera rotation, see persp.default
 #' @param phi Camera rotation, see persp.default
-#' @param expand 
+#' @param expand zoom 
+#' @param triptych plot from all three main axes?
+#' @param pmat optional projection matrix (e.g. from 2d persp)
 #'
+#' @import graphics
 #' @export
 persp.ellipsoid <- function(x, add=FALSE, theta=25, phi=30, 
                             expand=.9, triptych=FALSE, 

@@ -73,7 +73,7 @@ plot.ellipsoid <- function(x, add=TRUE, i=0, levels=1,
 predict.ellipsoid <- function(x, u, ...){
   if(missing(u)) stop("direction(s) u needed")
   d <- 1 / diag(u %*% x$A %*% t(u) )
-  r <- sqrt(d) 
+  r <- sqrt(abs(d))
   r
 }
 
@@ -157,12 +157,14 @@ ellipse_form <- function(beta, d, check=FALSE){
 #' @param A the trasformation matrix in an ellipsoid equation
 #' @param eps Inflate diagonal by this factor, to avoid numerical problems.
 #' 
+#' @details does not work with improper A, will return inf long axes.
+#'   
 #' @export
 
 ellipse_solve_rota <- function(A, eps = 0){
   ev <- eigen(A + diag(diag(A)*eps))
-  # make sure working with a definite:
-  if(any(ev$value<0)){
+  # make sure working with a definite. But if improper, dont go as breaks:
+  if(any(ev$value<0) && !all(ev$value <= 0)){
     i <- which(ev$value > 0)
     S <- diag(0, ncol(A))
     for(j in i) S <- S + ev$value[j] * ev$vec[,i]%*%t(ev$vec[,i])

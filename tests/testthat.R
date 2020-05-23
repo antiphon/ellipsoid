@@ -1,11 +1,11 @@
-library(testthat)
-#library(devtools)
-library(ellipsoid)
-
-options(testthat.use_colours = FALSE)
-test_check("ellipsoid")
-
+# library(testthat)
+# #library(devtools)
+# library(ellipsoid)
 # 
-# with_envvar(
-#   c(LANG = "en_US"), test_package("ellipsoid")
-#)
+# options(testthat.use_colours = FALSE)
+# test_check("ellipsoid")
+# 
+# # 
+# # with_envvar(
+# #   c(LANG = "en_US"), test_package("ellipsoid")
+# #)

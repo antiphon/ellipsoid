@@ -3,7 +3,6 @@
 library(devtools)
 load_all(".")
 library(rgl)
-library(sphere)
 library(sp)
 
 axes <- c(1/4,1,4)

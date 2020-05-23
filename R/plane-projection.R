@@ -41,7 +41,7 @@ project_to_plane <- function(xyz, normal){
 #' in the returned ellipse's component $basis3d. Third column is n.
 #' 
 #' @references 
-#'  P. P. Klein, “On the Ellipsoid and Plane Intersection Equation,” Appl. Math., vol. 3, no. November, pp. 1634–1640, 2012.
+#' P. P. Klein,"On the Ellipsoid and Plane Intersection Equation," Appl. Math., vol. 3, no. November, pp. 1634-1640, 2012.
 #' @export
 
 intersect_ellipsoid_plane <- function(x, n, q, r) {
@@ -55,7 +55,7 @@ intersect_ellipsoid_plane <- function(x, n, q, r) {
   # orthongonal vectors.
   # random unit to start with
   if(missing(r)) {
-    u <- sphere::runifsphere(1)
+    u <- runifsphere(1)
     r <- cross(n, u)
   }
   r <- r/sqrt(sum(r^2))

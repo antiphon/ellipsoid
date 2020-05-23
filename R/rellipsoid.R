@@ -11,7 +11,7 @@
 #'Sampling is done by first sampling uniformly on the surface of a
 #'sphere and then transforming with the ellipsoid axes. The sampling weights are
 #'set to piecewise linear approximation of the ellipse surface integral, the resolution of which is controlled by 'pieces'.
-#'@import sphere
+#'
 #'@export 
 
 rellipsoid <- function(n, axes=c(1,1,1), center, noise.sd=0, R=NULL, pieces=1000){
@@ -46,7 +46,7 @@ rellipsoid <- function(n, axes=c(1,1,1), center, noise.sd=0, R=NULL, pieces=1000
     a <- u * 2 * pi
     i <- acos(2*v - 1)
     ai<- cbind(azi=a, inc=i)
-    x <- sphere::ai2xyz(ai)
+    x <- ai2xyz(ai)
     x <- x%*%M
     warning("3D rellipsoid is truely uniform sample only for a sphere.")
   }
@@ -76,7 +76,6 @@ rellipsoid <- function(n, axes=c(1,1,1), center, noise.sd=0, R=NULL, pieces=1000
 #' @param R rotation matrix
 #' @param noise.sd noise
 #' 
-#' @import sphere
 
 rellipsoid_dev <- function(n, axes=c(1,1,1), noise.sd=0, R=NULL, method=1, rej=FALSE){
   # transform points on the surface of an circle

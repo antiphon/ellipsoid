@@ -8,15 +8,15 @@ R <- sphere::rotationMatrix(az=pi/4)[-3,-3]
 x <- rellipsoid(50, axes, noise.sd = s<-0.2, R = R)
 
 ee <- ellipsoid_OLS(x)
-se <- ee$ols_fit$s2
-e <- ellipsoid_ALS(x, s2=seq(se*.1, se, length=10))
+s2e <- ee$ols_fit$s2
+e <- ellipsoid_ALS(x, s2=seq(s2e*.1, se, length=10))
 
 summary(ee)
 summary(e)
-cat("Noise s2:", s^2,"\nRot was:", c(pi/4, pi-pi/4),"\n")
+cat("\nTruth:\nNoise s2:", s^2,"\nRot was:", c(pi/4, pi-pi/4),"\n")
 
-print(ee$ols_fit$varcov)
-print(e$ols_fit$varcov)
+#print(ee$ols_fit$varcov)
+#print(e$ols_fit$varcov)
 
 confint(ee)
 confint(e)

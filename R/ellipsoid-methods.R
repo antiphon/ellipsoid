@@ -227,7 +227,6 @@ sample_ellipse_beta <- function(x, nsim=100, tol=0, maxiter=500){
 #' @param d dimension
 #' @param ... passed on to 'ellipse_solve_rota'
 #' 
-#' @import sphere
 #' @export
 
 ellipsoid_from_beta <- function(beta, d, ...){
@@ -244,7 +243,7 @@ ellipsoid_from_beta <- function(beta, d, ...){
     f <- R %*% c(1,0)
     angles <- atan2(f[2],f[1])
   }else if(d==3){
-    angles <- sphere::rotationMatrix2EulerAngles(R)
+    angles <- rotationMatrix2EulerAngles(R)
   }
   
   # check if we got a valid fit

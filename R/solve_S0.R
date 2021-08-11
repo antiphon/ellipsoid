@@ -1,6 +1,5 @@
 #' Solve covariance matrix from unstable X
 #' 
-
 solve_S0 <- function(Y){
   warn <- FALSE
   m <- 1e-9 # hedging

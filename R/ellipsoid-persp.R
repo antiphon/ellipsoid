@@ -12,6 +12,7 @@
 #'
 #' @import graphics
 #' @export
+
 persp.ellipsoid <- function(x, add=FALSE, theta=25, phi=30, 
                             expand=.9, triptych=FALSE, 
                             pmat, ...){
@@ -42,7 +43,7 @@ persp.ellipsoid <- function(x, add=FALSE, theta=25, phi=30,
 
 #' add ellipse to persp plot
 #' 
-
+#'
 add_ellipsoid2persp <- function(x, N=2, colmap=values2colors, pmat, ...){
   s <- ellipsoid_shape(N, x$semi_axes, x$rot)
   w <- s$vb[4,]

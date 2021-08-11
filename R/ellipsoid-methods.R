@@ -1,4 +1,3 @@
-############################################################
 #' Plot an ellipsoid
 #' 
 #' @param x ellipsoid
@@ -8,13 +7,18 @@
 #' @param res 2d resolution
 #' @param scale 1. use to enlarge or shrink
 #' @param N 2, iteration of refinement in 3D (resolution)
+#' @param xlab axis-label 
+#' @param ylab axis-label 
+#' @param ... passed on to lines or rgl::shade3d
 #' 
 #' @details 
-#' For 3D ellipsoid, if i=1,2 or 3, plot 2D intersection of 
+#' #' For 3D ellipsoid, if i=1,2 or 3, plot 2D intersection of 
 #' plane:  i = 1 yz-plane; i = 2 xz-plane; i = 3 xy-plane. 
-#' 
-#' @export
-plot.ellipsoid <- function(x, add=TRUE, i=0, levels=1, 
+#' @import rgl
+#'@export
+
+plot.ellipsoid <- function(x,
+                           add=TRUE, i=0, levels=1, 
                            res=128, scale=1, N=2, 
                            xlab="x",
                            ylab="y", ...){
@@ -63,6 +67,7 @@ plot.ellipsoid <- function(x, add=TRUE, i=0, levels=1,
     }
   }
 }
+
 ####################################################################
 #' Predict i.e. give the length of a direction to be on the ellipsoid
 #'
